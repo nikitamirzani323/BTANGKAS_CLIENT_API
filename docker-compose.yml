@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  btangkas-client-api:
+    container_name: btangkas-client-api
+    image: btangkas-client-api:0.0.0.1
+    build: .
+    ports:
+      - 2115:2115
+    restart: always
