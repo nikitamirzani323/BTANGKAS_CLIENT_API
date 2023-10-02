@@ -421,7 +421,7 @@ func Fetch_companyListBet(idcompany string) (helpers.Response, error) {
 	ctx := context.Background()
 	start := time.Now()
 
-	tbl_mst_listbet, _ := Get_mappingdatabase(idcompany)
+	tbl_mst_listbet, _, _, _ := Get_mappingdatabase(idcompany)
 
 	sql_select := `SELECT 
 			idbet_listbet, minbet_listbet, 
@@ -476,7 +476,7 @@ func Fetch_companyConfPoint(idbet int, idcompany string) (helpers.Response, erro
 	ctx := context.Background()
 	start := time.Now()
 
-	_, tbl_mst_config := Get_mappingdatabase(idcompany)
+	_, tbl_mst_config, _, _ := Get_mappingdatabase(idcompany)
 
 	sql_select := `SELECT 
 			A.idconf_conf, A.idbet_listbet, A.idpoin, A.poin_conf,  
@@ -764,7 +764,7 @@ func Save_companyListBet(admin, idcompany, sData string, idrecord, minbet int) (
 	tglnow, _ := goment.New()
 	render_page := time.Now()
 	flag := false
-	tbl_mst_listbet, _ := Get_mappingdatabase(idcompany)
+	tbl_mst_listbet, _, _, _ := Get_mappingdatabase(idcompany)
 
 	if sData == "New" {
 		flag = CheckDBTwoField(tbl_mst_listbet, "idcompany", idcompany, "minbet_listbet", strconv.Itoa(minbet))
@@ -830,7 +830,7 @@ func Save_companyConfPoint(admin, idcompany, sData string, idrecord, idbet, poin
 	render_page := time.Now()
 	flag := false
 
-	_, tbl_mst_config := Get_mappingdatabase(idcompany)
+	_, tbl_mst_config, _, _ := Get_mappingdatabase(idcompany)
 
 	if sData == "New" {
 		sql_select := `SELECT 

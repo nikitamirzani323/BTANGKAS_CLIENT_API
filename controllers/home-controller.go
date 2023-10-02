@@ -120,9 +120,11 @@ func TransaksiSave(c *fiber.Ctx) error {
 	if err != nil {
 		c.Status(fiber.StatusBadRequest)
 		return c.JSON(fiber.Map{
-			"status":  fiber.StatusBadRequest,
-			"message": err.Error(),
-			"record":  nil,
+			"status":      fiber.StatusBadRequest,
+			"message":     err.Error(),
+			"idtransaksi": "",
+			"card_game":   "",
+			"time":        "",
 		})
 	}
 

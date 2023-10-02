@@ -15,10 +15,11 @@ type Responsepaging struct {
 	Time        string      `json:"time"`
 }
 type Responsetransaksi struct {
-	Status    int         `json:"status"`
-	Message   string      `json:"message"`
-	Card_game interface{} `json:"card_game"`
-	Time      string      `json:"time"`
+	Status      int         `json:"status"`
+	Message     string      `json:"message"`
+	Idtransaksi string      `json:"idtransaksi"`
+	Card_game   interface{} `json:"card_game"`
+	Time        string      `json:"time"`
 }
 type Responsecompany struct {
 	Status   int         `json:"status"`

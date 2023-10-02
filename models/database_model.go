@@ -208,9 +208,11 @@ func Exec_SQL(sql, table, action string, args ...interface{}) (bool, string) {
 	}
 	return flag, msg
 }
-func Get_mappingdatabase(codeagen string) (string, string) {
+func Get_mappingdatabase(codeagen string) (string, string, string, string) {
 	tbl_mst_listbet := `"db_tangkas_` + strings.ToLower(codeagen) + `".tbl_mst_listbet`
 	tbl_mst_config := `"db_tangkas_` + strings.ToLower(codeagen) + `".tbl_mst_config`
+	tbl_trx_transaksi := `"db_tangkas_` + strings.ToLower(codeagen) + `".tbl_trx_transaksi`
+	tbl_trx_transaksidetail := `"db_tangkas_` + strings.ToLower(codeagen) + `".tbl_trx_transaksidetail`
 
-	return tbl_mst_listbet, tbl_mst_config
+	return tbl_mst_listbet, tbl_mst_config, tbl_trx_transaksi, tbl_trx_transaksidetail
 }
