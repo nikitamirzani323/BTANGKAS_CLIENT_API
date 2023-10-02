@@ -7,7 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/controllers"
-	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/middleware"
 )
 
 func Init() *fiber.App {
@@ -46,32 +45,8 @@ func Init() *fiber.App {
 	app.Get("/dashboard", monitor.New())
 
 	app.Post("/api/checktoken", controllers.CheckToken)
-	app.Post("/api/login", controllers.CheckLogin)
-	app.Post("/api/valid", middleware.JWTProtected(), controllers.Home)
-	app.Post("/api/alladmin", middleware.JWTProtected(), controllers.Adminhome)
-	app.Post("/api/detailadmin", middleware.JWTProtected(), controllers.AdminDetail)
-	app.Post("/api/saveadmin", middleware.JWTProtected(), controllers.AdminSave)
-
-	app.Post("/api/alladminrule", middleware.JWTProtected(), controllers.Adminrulehome)
-	app.Post("/api/saveadminrule", middleware.JWTProtected(), controllers.AdminruleSave)
-
-	app.Post("/api/curr", middleware.JWTProtected(), controllers.Currhome)
-	app.Post("/api/currsave", middleware.JWTProtected(), controllers.CurrSave)
-	app.Post("/api/listpoint", middleware.JWTProtected(), controllers.Listpointhome)
-	app.Post("/api/listpointsave", middleware.JWTProtected(), controllers.ListpointSave)
-	app.Post("/api/listbet", middleware.JWTProtected(), controllers.Listbethome)
-	app.Post("/api/listbetsave", middleware.JWTProtected(), controllers.ListbetSave)
-	app.Post("/api/company", middleware.JWTProtected(), controllers.Companyhome)
-	app.Post("/api/companylistbet", middleware.JWTProtected(), controllers.Companylistbethome)
-	app.Post("/api/companylistbetsave", middleware.JWTProtected(), controllers.CompanylistbetSave)
-	app.Post("/api/companyconfpoint", middleware.JWTProtected(), controllers.Companyconfpointhome)
-	app.Post("/api/companyconfpointsave", middleware.JWTProtected(), controllers.CompanyconfpointSave)
-	app.Post("/api/companysave", middleware.JWTProtected(), controllers.CompanySave)
-	app.Post("/api/companyadmin", middleware.JWTProtected(), controllers.Companyadminhome)
-	app.Post("/api/companyadminbycompany", middleware.JWTProtected(), controllers.CompanyadminByCompany)
-	app.Post("/api/companyadminsave", middleware.JWTProtected(), controllers.CompanyadminSave)
-	app.Post("/api/companyadminrule", middleware.JWTProtected(), controllers.Companyadminrulehome)
-	app.Post("/api/companyadminrulesave", middleware.JWTProtected(), controllers.CompanyadminruleSave)
+	app.Post("/api/savetransaksi", controllers.TransaksiSave)
+	app.Post("/api/savetransaksidetail", controllers.TransaksidetailSave)
 
 	return app
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/entities"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/helpers"
+	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/models"
 )
 
 func CheckToken(c *fiber.Ctx) error {
@@ -55,7 +56,7 @@ func CheckToken(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(
 			fiber.Map{
 				"status":  fiber.StatusBadRequest,
-				"message": "Username or Password Not Found",
+				"message": "Data Not Found",
 			})
 
 	} else {
@@ -71,8 +72,110 @@ func CheckToken(c *fiber.Ctx) error {
 			"status":           fiber.StatusOK,
 			"client_idcompany": "ajuna",
 			"client_name":      "developer",
+			"client_username":  "developer212",
 			"client_credit":    10000,
 		})
 
 	}
+}
+func TransaksiSave(c *fiber.Ctx) error {
+	var errors []*helpers.ErrorResponse
+	client := new(entities.Controller_transaksisave)
+	validate := validator.New()
+	if err := c.BodyParser(client); err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusBadRequest,
+			"message": err.Error(),
+			"record":  nil,
+		})
+	}
+
+	err := validate.Struct(client)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			var element helpers.ErrorResponse
+			element.Field = err.StructField()
+			element.Tag = err.Tag()
+			errors = append(errors, &element)
+		}
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusBadRequest,
+			"message": "validation",
+			"record":  errors,
+		})
+	}
+	// user := c.Locals("jwt").(*jwt.Token)
+	// claims := user.Claims.(jwt.MapClaims)
+	// name := claims["name"].(string)
+	// temp_decp := helpers.Decryption(name)
+	// client_admin, _ := helpers.Parsing_Decry(temp_decp, "==")
+
+	//idcompany, username string, round_bet, bet, c_before, c_after, win, idpoin int
+	result, err := models.Save_transaksi(client.Transaksi_company, client.Transaksi_username, client.Transaksi_status,
+		client.Transaksidetail_roundbet, client.Transaksidetail_bet, client.Transaksidetail_cbefore, client.Transaksidetail_cafter,
+		client.Transaksidetail_win, client.Transaksidetail_idpoin)
+
+	if err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusBadRequest,
+			"message": err.Error(),
+			"record":  nil,
+		})
+	}
+
+	return c.JSON(result)
+}
+func TransaksidetailSave(c *fiber.Ctx) error {
+	var errors []*helpers.ErrorResponse
+	client := new(entities.Controller_transaksidetailsave)
+	validate := validator.New()
+	if err := c.BodyParser(client); err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusBadRequest,
+			"message": err.Error(),
+			"record":  nil,
+		})
+	}
+
+	err := validate.Struct(client)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			var element helpers.ErrorResponse
+			element.Field = err.StructField()
+			element.Tag = err.Tag()
+			errors = append(errors, &element)
+		}
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusBadRequest,
+			"message": "validation",
+			"record":  errors,
+		})
+	}
+	// user := c.Locals("jwt").(*jwt.Token)
+	// claims := user.Claims.(jwt.MapClaims)
+	// name := claims["name"].(string)
+	// temp_decp := helpers.Decryption(name)
+	// client_admin, _ := helpers.Parsing_Decry(temp_decp, "==")
+
+	//idtransaksi, resulcard_win string, round_bet, bet, c_before, c_after, win, idpoin int
+	result, err := models.Save_transaksidetail(
+		client.Transaksidetail_idtransaksi, client.Transaksidetail_resultcardwin, client.Transaksidetail_status,
+		client.Transaksidetail_roundbet, client.Transaksidetail_bet, client.Transaksidetail_cbefore, client.Transaksidetail_cafter,
+		client.Transaksidetail_win, client.Transaksidetail_idpoin)
+
+	if err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusBadRequest,
+			"message": err.Error(),
+			"record":  nil,
+		})
+	}
+
+	return c.JSON(result)
 }
