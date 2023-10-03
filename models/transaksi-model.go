@@ -12,6 +12,8 @@ import (
 	"github.com/nleeper/goment"
 )
 
+var a []int
+
 func Save_transaksi(idcompany, username, status, resultcardwin string, round_bet, bet, c_before, c_after, win, idpoin int) (helpers.Responsetransaksi, error) {
 	var res helpers.Responsetransaksi
 	msg := "Failed"
@@ -136,20 +138,48 @@ func Save_transaksidetail(idcompany, idtransaksi, resulcard_win, status string, 
 
 	return res, nil
 }
+
 func _GenerateCard() string {
-	var a [7]int
+	// var a [7]int
 	min := 0
 	max := 54
 	result := ""
-	for i := 0; i < 7; i++ {
+	// for i := 0; i < 7; i++ {
+	// 	var n = rand.Intn(max-min) + min
+	// 	a[i] = n
+	// 	if i == 6 {
+	// 		result += strconv.Itoa(n)
+	// 	} else {
+	// 		result += strconv.Itoa(n) + ","
+	// 	}
+
+	// }
+	var i = 0
+	for {
 		var n = rand.Intn(max-min) + min
-		a[i] = n
-		if i == 6 {
-			result += strconv.Itoa(n)
-		} else {
-			result += strconv.Itoa(n) + ","
+
+		if !search_array(n) {
+			a = append(a, n)
+
+			if i == 6 {
+				result += strconv.Itoa(n)
+			} else {
+				result += strconv.Itoa(n) + ","
+			}
+			i++
+		}
+		if i == 7 {
+			break
 		}
 
 	}
 	return result
+}
+func search_array(key int) bool {
+	for _, element := range a {
+		if element == key { // check the condition if its true return index
+			return true
+		}
+	}
+	return false
 }
