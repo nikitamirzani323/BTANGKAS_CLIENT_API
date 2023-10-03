@@ -67,13 +67,14 @@ func CheckToken(c *fiber.Ctx) error {
 		// if err != nil {
 		// 	return c.SendStatus(fiber.StatusInternalServerError)
 		// }
-
+		listbet, _ := models.Fetch_listbetHome("AJUNA")
 		return c.JSON(fiber.Map{
 			"status":           fiber.StatusOK,
 			"client_idcompany": "ajuna",
 			"client_name":      "developer",
 			"client_username":  "developer212",
-			"client_credit":    10000,
+			"client_credit":    100000,
+			"client_listbet":   listbet,
 		})
 
 	}
@@ -113,7 +114,7 @@ func TransaksiSave(c *fiber.Ctx) error {
 	// client_admin, _ := helpers.Parsing_Decry(temp_decp, "==")
 
 	//idcompany, username string, round_bet, bet, c_before, c_after, win, idpoin int
-	result, err := models.Save_transaksi(client.Transaksi_company, client.Transaksi_username, client.Transaksi_status,
+	result, err := models.Save_transaksi(client.Transaksi_company, client.Transaksi_username, client.Transaksi_status, client.Transaksi_resultcardwin,
 		client.Transaksi_roundbet, client.Transaksi_bet, client.Transaksi_cbefore, client.Transaksi_cafter,
 		client.Transaksi_win, client.Transaksi_idpoin)
 
@@ -165,7 +166,7 @@ func TransaksidetailSave(c *fiber.Ctx) error {
 	// client_admin, _ := helpers.Parsing_Decry(temp_decp, "==")
 
 	//idtransaksi, resulcard_win string, round_bet, bet, c_before, c_after, win, idpoin int
-	result, err := models.Save_transaksidetail(
+	result, err := models.Save_transaksidetail(client.Transaksidetail_company,
 		client.Transaksidetail_idtransaksi, client.Transaksidetail_resultcardwin, client.Transaksidetail_status,
 		client.Transaksidetail_roundbet, client.Transaksidetail_bet, client.Transaksidetail_cbefore, client.Transaksidetail_cafter,
 		client.Transaksidetail_win, client.Transaksidetail_idpoin)

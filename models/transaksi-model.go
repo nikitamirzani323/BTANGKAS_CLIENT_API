@@ -8,12 +8,11 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/configs"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/helpers"
 	"github.com/nleeper/goment"
 )
 
-func Save_transaksi(idcompany, username, status string, round_bet, bet, c_before, c_after, win, idpoin int) (helpers.Responsetransaksi, error) {
+func Save_transaksi(idcompany, username, status, resultcardwin string, round_bet, bet, c_before, c_after, win, idpoin int) (helpers.Responsetransaksi, error) {
 	var res helpers.Responsetransaksi
 	msg := "Failed"
 	tglnow, _ := goment.New()
@@ -38,7 +37,7 @@ func Save_transaksi(idcompany, username, status string, round_bet, bet, c_before
 	idrecrodparent_value := tglnow.Format("YY") + tglnow.Format("MM") + tglnow.Format("DD") + tglnow.Format("HH") + strconv.Itoa(idrecord_counter)
 	date_transaksi := tglnow.Format("YYYY-MM-DD HH:mm:ss")
 	resultcard := _GenerateCard()
-	log.Println(resultcard)
+
 	flag_insert, msg_insert := Exec_SQL(sql_insert, tbl_trx_transaksi, "INSERT",
 		idrecrodparent_value, idcompany, date_transaksi,
 		username, 0, resultcard,
@@ -46,7 +45,8 @@ func Save_transaksi(idcompany, username, status string, round_bet, bet, c_before
 
 	if flag_insert {
 		msg = "Succes"
-		if round_bet == 1 {
+		log.Printf("round %d", round_bet)
+		if round_bet == 1 || round_bet == 4 {
 			sql_insertdetail := `
 				insert into
 				` + tbl_trx_transaksidetail + ` (
@@ -65,16 +65,17 @@ func Save_transaksi(idcompany, username, status string, round_bet, bet, c_before
 			fielddetail_column := tbl_trx_transaksidetail + tglnow.Format("YYYY") + tglnow.Format("MM")
 			idrecorddetail_counter := Get_counter(fielddetail_column)
 			idrecroddetail_value := tglnow.Format("YY") + tglnow.Format("MM") + tglnow.Format("DD") + tglnow.Format("HH") + strconv.Itoa(idrecorddetail_counter)
-			flag_insert, msg_insert := Exec_SQL(sql_insertdetail, tbl_trx_transaksidetail, "INSERT",
+			flag_insertdetail, msg_insertdetail := Exec_SQL(sql_insertdetail, tbl_trx_transaksidetail, "INSERT",
 				idrecroddetail_value, idrecrodparent_value, round_bet,
 				bet, c_before, c_after,
-				win, idpoin, "", status,
+				win, idpoin, resultcardwin, status,
 				"SYSTEM", tglnow.Format("YYYY-MM-DD HH:mm:ss"))
 
-			if flag_insert {
-				msg = "Succes"
+			if flag_insertdetail {
+				msg_insertdetail = "Succes"
+				log.Println(msg_insertdetail)
 			} else {
-				fmt.Println(msg_insert)
+				fmt.Println(msg_insertdetail)
 			}
 		}
 
@@ -90,15 +91,17 @@ func Save_transaksi(idcompany, username, status string, round_bet, bet, c_before
 
 	return res, nil
 }
-func Save_transaksidetail(idtransaksi, resulcard_win, status string, round_bet, bet, c_before, c_after, win, idpoin int) (helpers.Response, error) {
+func Save_transaksidetail(idcompany, idtransaksi, resulcard_win, status string, round_bet, bet, c_before, c_after, win, idpoin int) (helpers.Response, error) {
 	var res helpers.Response
 	msg := "Failed"
 	tglnow, _ := goment.New()
 	render_page := time.Now()
 
+	_, _, _, tbl_trx_transaksidetail := Get_mappingdatabase(idcompany)
+
 	sql_insert := `
 			insert into
-			` + configs.DB_tbl_trx_transaksidetail + ` (
+			` + tbl_trx_transaksidetail + ` (
 				idtransaksidetail, idtransaksi , roundbet_detail, 
 				bet, credit_before,  credit_after, 
 				win, idpoin, resultcard_win, status_transaksidetail, 
@@ -111,10 +114,10 @@ func Save_transaksidetail(idtransaksi, resulcard_win, status string, round_bet, 
 			)
 			`
 
-	field_column := configs.DB_tbl_trx_transaksidetail + tglnow.Format("YYYY") + tglnow.Format("MM")
+	field_column := tbl_trx_transaksidetail + tglnow.Format("YYYY") + tglnow.Format("MM")
 	idrecord_counter := Get_counter(field_column)
 	idrecrod_value := tglnow.Format("YY") + tglnow.Format("MM") + tglnow.Format("DD") + tglnow.Format("HH") + strconv.Itoa(idrecord_counter)
-	flag_insert, msg_insert := Exec_SQL(sql_insert, configs.DB_tbl_trx_transaksidetail, "INSERT",
+	flag_insert, msg_insert := Exec_SQL(sql_insert, tbl_trx_transaksidetail, "INSERT",
 		idrecrod_value, idtransaksi, round_bet,
 		bet, c_before, c_after,
 		win, idpoin, resulcard_win, status,
