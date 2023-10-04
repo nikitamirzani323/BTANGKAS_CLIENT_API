@@ -1,6 +1,8 @@
 package models
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"math/rand"
@@ -8,6 +10,8 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/configs"
+	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/db"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/helpers"
 	"github.com/nleeper/goment"
 )
@@ -38,8 +42,8 @@ func Save_transaksi(idcompany, username, status, resultcardwin string, round_bet
 	idrecord_counter := Get_counter(field_column)
 	idrecrodparent_value := tglnow.Format("YY") + tglnow.Format("MM") + tglnow.Format("DD") + tglnow.Format("HH") + strconv.Itoa(idrecord_counter)
 	date_transaksi := tglnow.Format("YYYY-MM-DD HH:mm:ss")
-	resultcard := _GenerateCard()
-
+	resultcard := _GenerateCardDB()
+	log.Println("Generate :" + resultcard)
 	flag_insert, msg_insert := Exec_SQL(sql_insert, tbl_trx_transaksi, "INSERT",
 		idrecrodparent_value, idcompany, date_transaksi,
 		username, 0, resultcard,
@@ -182,4 +186,29 @@ func search_array(key int) bool {
 		}
 	}
 	return false
+}
+func _GenerateCardDB() string {
+	con := db.CreateCon()
+	ctx := context.Background()
+	var idpattern string
+	sql_select := `
+			SELECT
+			idpattern     
+			FROM ` + configs.DB_tbl_trx_pattern + ` 
+			ORDER BY random()
+			LIMIT 1
+		`
+
+	fmt.Println(sql_select)
+	row := con.QueryRowContext(ctx, sql_select)
+	switch e := row.Scan(&idpattern); e {
+	case sql.ErrNoRows:
+
+	case nil:
+
+	default:
+
+	}
+
+	return idpattern
 }

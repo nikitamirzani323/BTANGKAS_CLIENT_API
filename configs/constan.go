@@ -12,6 +12,7 @@ const (
 	DB_tbl_mst_company_admin     string = "tbl_mst_company_admin"
 	DB_tbl_trx_transaksi         string = "tbl_trx_transaksi"
 	DB_tbl_trx_transaksidetail   string = "tbl_trx_transaksidetail"
+	DB_tbl_trx_pattern           string = "tbl_trx_pattern"
 
 	STATUS_NEW      string = "background:#0dcaf0;font-weight:bold;color:black;"
 	STATUS_RUNNING  string = "background:#FFEB3B;font-weight:bold;color:black;"
