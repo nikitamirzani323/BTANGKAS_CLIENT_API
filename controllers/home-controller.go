@@ -113,9 +113,9 @@ func TransaksiSave(c *fiber.Ctx) error {
 	// temp_decp := helpers.Decryption(name)
 	// client_admin, _ := helpers.Parsing_Decry(temp_decp, "==")
 
-	//idcompany, username string, round_bet, bet, c_before, c_after, win, idpoin int
+	//idcompany, username string, round_game_all,round_bet, bet, c_before, c_after, win, idpoin int
 	result, err := models.Save_transaksi(client.Transaksi_company, client.Transaksi_username, client.Transaksi_status, client.Transaksi_resultcardwin,
-		client.Transaksi_roundbet, client.Transaksi_bet, client.Transaksi_cbefore, client.Transaksi_cafter,
+		client.Transaksi_roundgameall, client.Transaksi_roundbet, client.Transaksi_bet, client.Transaksi_cbefore, client.Transaksi_cafter,
 		client.Transaksi_win, client.Transaksi_idpoin)
 
 	if err != nil {

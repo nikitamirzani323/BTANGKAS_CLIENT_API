@@ -19,7 +19,7 @@ import (
 
 var a []int
 
-func Save_transaksi(idcompany, username, status, resultcardwin string, round_bet, bet, c_before, c_after, win, idpoin int) (helpers.Responsetransaksi, error) {
+func Save_transaksi(idcompany, username, status, resultcardwin string, round_game_all, round_bet, bet, c_before, c_after, win, idpoin int) (helpers.Responsetransaksi, error) {
 	var res helpers.Responsetransaksi
 	msg := "Failed"
 	tglnow, _ := goment.New()
@@ -43,13 +43,25 @@ func Save_transaksi(idcompany, username, status, resultcardwin string, round_bet
 	idrecord_counter := Get_counter(field_column)
 	idrecrodparent_value := tglnow.Format("YY") + tglnow.Format("MM") + tglnow.Format("DD") + tglnow.Format("HH") + strconv.Itoa(idrecord_counter)
 	date_transaksi := tglnow.Format("YYYY-MM-DD HH:mm:ss")
-	pattern := _GenerateCardRandom()
+
+	pattern := ""
+	field_redis := "PATTERN_" + idcompany + "_" + username
+	if round_game_all == 0 {
+		pattern = _GenerateCardRandom()
+		helpers.SetRedis(field_redis, pattern, 5*time.Minute)
+	} else {
+		resultredis, _ := helpers.GetRedis(field_redis)
+		// jsonredis := []byte(resultredis)
+		// record_RD, _, _, _ := jsonparser.Get(jsonredis, "record")
+		log.Println("Data redis " + resultredis)
+		pattern = _GenerateCardRandom()
+	}
 	resultcard := strings.Split(pattern, "|")
 
 	log.Println("Generate :" + pattern)
 	flag_insert, msg_insert := Exec_SQL(sql_insert, tbl_trx_transaksi, "INSERT",
 		idrecrodparent_value, idcompany, date_transaksi,
-		username, 0, resultcard[0],
+		username, 0, resultcard[round_game_all],
 		"SYSTEM", date_transaksi)
 
 	if flag_insert {
@@ -95,7 +107,7 @@ func Save_transaksi(idcompany, username, status, resultcardwin string, round_bet
 	res.Status = fiber.StatusOK
 	res.Message = msg
 	res.Idtransaksi = idrecrodparent_value
-	res.Card_game = resultcard
+	res.Card_game = resultcard[round_game_all]
 	res.Time = time.Since(render_page).String()
 
 	return res, nil

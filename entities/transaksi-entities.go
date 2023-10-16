@@ -3,6 +3,7 @@ package entities
 type Controller_transaksisave struct {
 	Transaksi_company       string `json:"transaksi_company" validate:"required"`
 	Transaksi_username      string `json:"transaksi_username" validate:"required"`
+	Transaksi_roundgameall  int    `json:"transaksi_roundgameall"`
 	Transaksi_roundbet      int    `json:"transaksi_roundbet"`
 	Transaksi_bet           int    `json:"transaksi_bet"`
 	Transaksi_cbefore       int    `json:"transaksi_cbefore"`
