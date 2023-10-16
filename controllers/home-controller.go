@@ -125,6 +125,7 @@ func TransaksiSave(c *fiber.Ctx) error {
 			"message":     err.Error(),
 			"idtransaksi": "",
 			"card_game":   "",
+			"card_length": 0,
 			"time":        "",
 		})
 	}
