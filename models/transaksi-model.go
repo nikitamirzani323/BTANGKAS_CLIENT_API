@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -42,11 +43,13 @@ func Save_transaksi(idcompany, username, status, resultcardwin string, round_bet
 	idrecord_counter := Get_counter(field_column)
 	idrecrodparent_value := tglnow.Format("YY") + tglnow.Format("MM") + tglnow.Format("DD") + tglnow.Format("HH") + strconv.Itoa(idrecord_counter)
 	date_transaksi := tglnow.Format("YYYY-MM-DD HH:mm:ss")
-	resultcard := _GenerateCardDB()
-	log.Println("Generate :" + resultcard)
+	pattern := _GenerateCardRandom()
+	resultcard := strings.Split(pattern, "|")
+
+	log.Println("Generate :" + pattern)
 	flag_insert, msg_insert := Exec_SQL(sql_insert, tbl_trx_transaksi, "INSERT",
 		idrecrodparent_value, idcompany, date_transaksi,
-		username, 0, resultcard,
+		username, 0, resultcard[0],
 		"SYSTEM", date_transaksi)
 
 	if flag_insert {
@@ -211,4 +214,11 @@ func _GenerateCardDB() string {
 	}
 
 	return idpattern
+}
+func _GenerateCardRandom() string {
+
+	pattern := "37-18-6-0-3-21-10|40-47-52-5-33-21-0|47-13-19-12-24-10-28|2-0-14-27-50-22-19|41-7-49-47-32-30-46|"
+	pattern += "41-15-29-18-48-12-40|41-15-29-18-48-12-40|36-18-27-25-50-48-26|34-42-24-51-53-4-16|47-11-20-43-32-28-6"
+
+	return pattern
 }
