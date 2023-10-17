@@ -13,6 +13,8 @@ const (
 	DB_tbl_trx_transaksi         string = "tbl_trx_transaksi"
 	DB_tbl_trx_transaksidetail   string = "tbl_trx_transaksidetail"
 	DB_tbl_trx_pattern           string = "tbl_trx_pattern"
+	DB_tbl_trx_listpattern       string = "tbl_trx_listpattern"
+	DB_tbl_trx_listpatterndetail string = "tbl_trx_listpatterndetail"
 
 	STATUS_NEW      string = "background:#0dcaf0;font-weight:bold;color:black;"
 	STATUS_RUNNING  string = "background:#FFEB3B;font-weight:bold;color:black;"
