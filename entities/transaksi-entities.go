@@ -9,7 +9,7 @@ type Controller_transaksisave struct {
 	Transaksi_cbefore       int    `json:"transaksi_cbefore"`
 	Transaksi_cafter        int    `json:"transaksi_cafter"`
 	Transaksi_win           int    `json:"transaksi_win"`
-	Transaksi_idpoin        int    `json:"transaksi_idpoin"`
+	Transaksi_codepoin      string `json:"transaksi_codepoin"`
 	Transaksi_resultcardwin string `json:"transaksi_resultcardwin" `
 	Transaksi_status        string `json:"transaksi_status" validate:"required"`
 }
@@ -23,7 +23,7 @@ type Controller_transaksidetailsave struct {
 	Transaksidetail_cbefore       int    `json:"transaksidetail_cbefore"`
 	Transaksidetail_cafter        int    `json:"transaksidetail_cafter"`
 	Transaksidetail_win           int    `json:"transaksidetail_win"`
-	Transaksidetail_idpoin        int    `json:"transaksidetail_idpoin"`
+	Transaksidetail_codepoin      string `json:"transaksidetail_codepoin"`
 	Transaksidetail_resultcardwin string `json:"transaksidetail_resultcardwin"`
 	Transaksidetail_status        string `json:"transaksidetail_status" validate:"required"`
 }

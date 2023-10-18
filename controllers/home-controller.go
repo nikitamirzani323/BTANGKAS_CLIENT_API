@@ -113,10 +113,10 @@ func TransaksiSave(c *fiber.Ctx) error {
 	// temp_decp := helpers.Decryption(name)
 	// client_admin, _ := helpers.Parsing_Decry(temp_decp, "==")
 
-	//idcompany, username string, round_game_all,round_bet, bet, c_before, c_after, win, idpoin int
-	result, err := models.Save_transaksi(client.Transaksi_company, client.Transaksi_username, client.Transaksi_status, client.Transaksi_resultcardwin,
+	//idcompany, username, status, resultcardwin, codepoin string, round_game_all, round_bet, bet, c_before, c_after, win
+	result, err := models.Save_transaksi(client.Transaksi_company, client.Transaksi_username, client.Transaksi_status, client.Transaksi_resultcardwin, client.Transaksi_codepoin,
 		client.Transaksi_roundgameall, client.Transaksi_roundbet, client.Transaksi_bet, client.Transaksi_cbefore, client.Transaksi_cafter,
-		client.Transaksi_win, client.Transaksi_idpoin)
+		client.Transaksi_win)
 
 	if err != nil {
 		c.Status(fiber.StatusBadRequest)
@@ -166,11 +166,11 @@ func TransaksidetailSave(c *fiber.Ctx) error {
 	// temp_decp := helpers.Decryption(name)
 	// client_admin, _ := helpers.Parsing_Decry(temp_decp, "==")
 
-	//idtransaksi, resulcard_win string, round_bet, bet, c_before, c_after, win, idpoin int
+	//idcompany, idtransaksi, resulcard_win, status, codepoin string, round_bet, bet, c_before, c_after, win int
 	result, err := models.Save_transaksidetail(client.Transaksidetail_company,
-		client.Transaksidetail_idtransaksi, client.Transaksidetail_resultcardwin, client.Transaksidetail_status,
+		client.Transaksidetail_idtransaksi, client.Transaksidetail_resultcardwin, client.Transaksidetail_status, client.Transaksidetail_codepoin,
 		client.Transaksidetail_roundbet, client.Transaksidetail_bet, client.Transaksidetail_cbefore, client.Transaksidetail_cafter,
-		client.Transaksidetail_win, client.Transaksidetail_idpoin)
+		client.Transaksidetail_win)
 
 	if err != nil {
 		c.Status(fiber.StatusBadRequest)
