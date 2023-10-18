@@ -1,12 +1,19 @@
 package controllers
 
 import (
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/buger/jsonparser"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/entities"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/helpers"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/models"
 )
+
+const invoice_home_redis = "LISTINVOICE"
 
 func CheckToken(c *fiber.Ctx) error {
 	var errors []*helpers.ErrorResponse
@@ -79,6 +86,89 @@ func CheckToken(c *fiber.Ctx) error {
 
 	}
 }
+func ListInvoice(c *fiber.Ctx) error {
+	var errors []*helpers.ErrorResponse
+	client := new(entities.Controller_invoice)
+	validate := validator.New()
+	if err := c.BodyParser(client); err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusBadRequest,
+			"message": err.Error(),
+			"record":  nil,
+		})
+	}
+
+	err := validate.Struct(client)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			var element helpers.ErrorResponse
+			element.Field = err.StructField()
+			element.Tag = err.Tag()
+			errors = append(errors, &element)
+		}
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusBadRequest,
+			"message": "validation",
+			"record":  errors,
+		})
+	}
+
+	var obj entities.Model_invoice
+	var arraobj []entities.Model_invoice
+	render_page := time.Now()
+	resultredis, flag := helpers.GetRedis(invoice_home_redis + "_" + strings.ToLower(client.Invoice_company) + "_" + strings.ToLower(client.Invoice_username))
+	jsonredis := []byte(resultredis)
+	record_RD, _, _, _ := jsonparser.Get(jsonredis, "record")
+	jsonparser.ArrayEach(record_RD, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		invoice_id, _ := jsonparser.GetString(value, "invoice_id")
+		invoice_date, _ := jsonparser.GetString(value, "invoice_date")
+		invoice_round, _ := jsonparser.GetInt(value, "invoice_round")
+		invoice_totalbet, _ := jsonparser.GetInt(value, "invoice_totalbet")
+		invoice_totalwin, _ := jsonparser.GetInt(value, "invoice_totalwin")
+		invoice_nmpoin, _ := jsonparser.GetString(value, "invoice_nmpoin")
+		invoice_status, _ := jsonparser.GetString(value, "invoice_status")
+		invoice_status_css, _ := jsonparser.GetString(value, "invoice_status_css")
+		invoice_card_result, _ := jsonparser.GetString(value, "invoice_card_result")
+		invoice_card_win, _ := jsonparser.GetString(value, "invoice_card_win")
+
+		obj.Invoice_id = invoice_id
+		obj.Invoice_date = invoice_date
+		obj.Invoice_round = int(invoice_round)
+		obj.Invoice_totalbet = int(invoice_totalbet)
+		obj.Invoice_totalwin = int(invoice_totalwin)
+		obj.Invoice_nmpoin = invoice_nmpoin
+		obj.Invoice_status = invoice_status
+		obj.Invoice_status_css = invoice_status_css
+		obj.Invoice_card_result = invoice_card_result
+		obj.Invoice_card_win = invoice_card_win
+		arraobj = append(arraobj, obj)
+	})
+
+	if !flag {
+		result, err := models.Fetch_invoice(client.Invoice_company, client.Invoice_username)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return c.JSON(fiber.Map{
+				"status":  fiber.StatusBadRequest,
+				"message": err.Error(),
+				"record":  nil,
+			})
+		}
+		helpers.SetRedis(invoice_home_redis+"_"+strings.ToLower(client.Invoice_company)+"_"+strings.ToLower(client.Invoice_username), result, 60*time.Minute)
+		fmt.Printf("INVOICE MYSQL %s-%s\n", client.Invoice_company, client.Invoice_username)
+		return c.JSON(result)
+	} else {
+		fmt.Printf("INVOICE CACHE %s-%s\n", client.Invoice_company, client.Invoice_username)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusOK,
+			"message": "Success",
+			"record":  arraobj,
+			"time":    time.Since(render_page).String(),
+		})
+	}
+}
 func TransaksiSave(c *fiber.Ctx) error {
 	var errors []*helpers.ErrorResponse
 	client := new(entities.Controller_transaksisave)
@@ -129,7 +219,7 @@ func TransaksiSave(c *fiber.Ctx) error {
 			"time":        "",
 		})
 	}
-
+	_deleteredis_game(client.Transaksi_company, client.Transaksi_username)
 	return c.JSON(result)
 }
 func TransaksidetailSave(c *fiber.Ctx) error {
@@ -180,6 +270,10 @@ func TransaksidetailSave(c *fiber.Ctx) error {
 			"record":  nil,
 		})
 	}
-
 	return c.JSON(result)
+}
+func _deleteredis_game(company, username string) {
+	val_invoice := helpers.DeleteRedis(invoice_home_redis + "_" + strings.ToLower(company) + "_" + strings.ToLower(username))
+	fmt.Printf("Redis Delete INVOICE : %d - %s %s\n", val_invoice, company, username)
+
 }

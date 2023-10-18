@@ -13,6 +13,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/configs"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/db"
+	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/entities"
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/helpers"
 	"github.com/nleeper/goment"
 )
@@ -23,6 +24,67 @@ type Card_Strc struct {
 	Total       int    `json:"total"`
 }
 
+func Fetch_invoice(idcompany, username string) (helpers.Response, error) {
+	var obj entities.Model_invoice
+	var arraobj []entities.Model_invoice
+	var res helpers.Response
+	msg := "Data Not Found"
+	con := db.CreateCon()
+	ctx := context.Background()
+	start := time.Now()
+
+	_, _, tbl_trx_transaksi, _ := Get_mappingdatabase(idcompany)
+
+	sql_select := `SELECT 
+			idtransaksi , to_char(COALESCE(createdate_transaksi,now()), 'YYYY-MM-DD HH24:MI:SS') as datetransaksi, 
+			roundbet, total_bet, total_win, 
+			card_codepoin, card_result, card_win 
+			FROM ` + tbl_trx_transaksi + `  
+			ORDER BY createdate_transaksi DESC  LIMIT 31 `
+
+	row, err := con.QueryContext(ctx, sql_select)
+	helpers.ErrorCheck(err)
+	for row.Next() {
+		var (
+			idtransaksi_db, datetransaksi_db              string
+			roundbet_db, total_bet_db, total_win_db       int
+			card_codepoin_db, card_result_db, card_win_db string
+		)
+
+		err = row.Scan(&idtransaksi_db, &datetransaksi_db,
+			&roundbet_db, &total_bet_db, &total_win_db,
+			&card_codepoin_db, &card_result_db, &card_win_db)
+
+		helpers.ErrorCheck(err)
+		status := "LOSE"
+		status_css := configs.STATUS_CANCEL
+		if card_win_db != "" {
+			status_css = configs.STATUS_COMPLETE
+			status = "WIN"
+		}
+
+		obj.Invoice_id = idtransaksi_db
+		obj.Invoice_date = datetransaksi_db
+		obj.Invoice_round = roundbet_db
+		obj.Invoice_totalbet = total_bet_db
+		obj.Invoice_totalwin = total_win_db
+		obj.Invoice_card_result = card_result_db
+		obj.Invoice_card_win = card_win_db
+		obj.Invoice_nmpoin = _GetInfoPoint(card_codepoin_db)
+		obj.Invoice_status = status
+		obj.Invoice_status_css = status_css
+		arraobj = append(arraobj, obj)
+		msg = "Success"
+	}
+	defer row.Close()
+
+	res.Status = fiber.StatusOK
+	res.Message = msg
+	res.Record = arraobj
+	res.Time = time.Since(start).String()
+
+	return res, nil
+}
 func Save_transaksi(idcompany, username, status, resultcardwin, codepoin string, round_game_all, round_bet, bet, c_before, c_after, win int) (helpers.Responsetransaksi, error) {
 	var res helpers.Responsetransaksi
 	msg := "Failed"
@@ -342,4 +404,24 @@ func _GetTotalBet_Transaksi(table, idtransaksi string) int {
 	}
 
 	return total_bet
+}
+func _GetInfoPoint(codepoin string) string {
+	con := db.CreateCon()
+	ctx := context.Background()
+	nmpoin := ""
+	sql_select := ""
+	sql_select += "SELECT "
+	sql_select += "nmpoin "
+	sql_select += "FROM " + configs.DB_tbl_mst_listpoint + " "
+	sql_select += "WHERE codepoin='" + codepoin + "' "
+
+	row := con.QueryRowContext(ctx, sql_select)
+	switch e := row.Scan(&nmpoin); e {
+	case sql.ErrNoRows:
+	case nil:
+	default:
+		helpers.ErrorCheck(e)
+	}
+
+	return nmpoin
 }

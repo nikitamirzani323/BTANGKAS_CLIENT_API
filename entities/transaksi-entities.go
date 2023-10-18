@@ -1,5 +1,22 @@
 package entities
 
+type Model_invoice struct {
+	Invoice_id          string `json:"invoice_id"`
+	Invoice_date        string `json:"invoice_date"`
+	Invoice_round       int    `json:"invoice_round"`
+	Invoice_totalbet    int    `json:"invoice_totalbet"`
+	Invoice_totalwin    int    `json:"invoice_totalwin"`
+	Invoice_nmpoin      string `json:"invoice_nmpoin"`
+	Invoice_status      string `json:"invoice_status"`
+	Invoice_status_css  string `json:"invoice_status_css"`
+	Invoice_card_result string `json:"invoice_card_result"`
+	Invoice_card_win    string `json:"invoice_card_win"`
+}
+
+type Controller_invoice struct {
+	Invoice_company  string `json:"invoice_company" validate:"required"`
+	Invoice_username string `json:"invoice_username" validate:"required"`
+}
 type Controller_transaksisave struct {
 	Transaksi_company       string `json:"transaksi_company" validate:"required"`
 	Transaksi_username      string `json:"transaksi_username" validate:"required"`
