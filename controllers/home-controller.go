@@ -13,6 +13,7 @@ import (
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/models"
 )
 
+const invoice_super_redis = "COMPANYINVOICE_BACKEND"
 const invoice_home_redis = "LISTINVOICE"
 
 func CheckToken(c *fiber.Ctx) error {
@@ -276,4 +277,6 @@ func _deleteredis_game(company, username string) {
 	val_invoice := helpers.DeleteRedis(invoice_home_redis + "_" + strings.ToLower(company) + "_" + strings.ToLower(username))
 	fmt.Printf("Redis Delete INVOICE : %d - %s %s\n", val_invoice, company, username)
 
+	val_invoice_super := helpers.DeleteRedis(invoice_super_redis + "_" + strings.ToLower(company))
+	fmt.Printf("Redis Delete INVOICE SUPER : %d - %s %s\n", val_invoice_super, company, username)
 }

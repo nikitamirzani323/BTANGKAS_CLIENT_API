@@ -391,9 +391,10 @@ func _GetTotalBet_Transaksi(table, idtransaksi string) int {
 	total_bet := 0
 	sql_select := ""
 	sql_select += "SELECT "
-	sql_select += "SUM(bet) as TOTAL "
+	sql_select += "(bet*roundbet_detail) AS total_bet "
 	sql_select += "FROM " + table + " "
-	sql_select += "WHERE idtransaksi='" + idtransaksi + "' "
+	sql_select += "WHERE idtransaksi='" + idtransaksi + "'  AND status_transaksidetail='LOSE' "
+	sql_select += "ORDER BY idtransaksidetail DESC LIMIT 1 "
 
 	row := con.QueryRowContext(ctx, sql_select)
 	switch e := row.Scan(&total_bet); e {
