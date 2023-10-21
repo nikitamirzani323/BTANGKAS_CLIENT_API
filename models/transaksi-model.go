@@ -35,12 +35,21 @@ func Fetch_invoice(idcompany, username string) (helpers.Response, error) {
 
 	_, _, tbl_trx_transaksi, _ := Get_mappingdatabase(idcompany)
 
-	sql_select := `SELECT 
-			idtransaksi , to_char(COALESCE(createdate_transaksi,now()), 'YYYY-MM-DD HH24:MI:SS') as datetransaksi, 
-			roundbet, total_bet, total_win, 
-			card_codepoin, card_result, card_win 
-			FROM ` + tbl_trx_transaksi + `  
-			ORDER BY createdate_transaksi DESC  LIMIT 31 `
+	tglnow, _ := goment.New()
+	tglskrg := tglnow.Format("YYYY-MM-DD HH:mm:ss")
+	tglbefore := tglnow.Add(-31, "days").Format("YYYY-MM-DD HH:mm:ss")
+	fmt.Println("tgl skrg :" + tglskrg)
+	fmt.Println("tgl before :" + tglbefore)
+
+	sql_select := ""
+	sql_select += "SELECT "
+	sql_select += "idtransaksi , to_char(COALESCE(createdate_transaksi,now()), 'YYYY-MM-DD HH24:MI:SS') as datetransaksi,  "
+	sql_select += "roundbet, total_bet, total_win,   "
+	sql_select += "card_codepoin, card_result, card_win    "
+	sql_select += "FROM " + tbl_trx_transaksi + " "
+	sql_select += "WHERE createdate_transaksi >='" + tglbefore + "' "
+	sql_select += "AND createdate_transaksi <='" + tglskrg + "' "
+	sql_select += "ORDER BY createdate_transaksi DESC  LIMIT 31 "
 
 	row, err := con.QueryContext(ctx, sql_select)
 	helpers.ErrorCheck(err)
