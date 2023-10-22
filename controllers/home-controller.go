@@ -77,12 +77,12 @@ func CheckToken(c *fiber.Ctx) error {
 		// }
 		listbet, _ := models.Fetch_listbetHome("AJUNA")
 		return c.JSON(fiber.Map{
-			"status":           fiber.StatusOK,
-			"client_idcompany": "ajuna",
-			"client_name":      "developer",
-			"client_username":  "developer212",
-			"client_credit":    100000,
-			"client_listbet":   listbet,
+			"status":          fiber.StatusOK,
+			"client_company":  "ajuna",
+			"client_name":     "developer",
+			"client_username": "developer212",
+			"client_credit":   100000,
+			"client_listbet":  listbet,
 		})
 
 	}
