@@ -124,7 +124,7 @@ func Save_transaksi(idcompany, username, status, resultcardwin, codepoin string,
 	idlistpattern := ""
 	pattern := ""
 	total_card := 0
-	field_redis := "PATTERN_" + strings.ToLower(idcompany) + "_" + strings.ToLower(username)
+	field_redis := "CLIENT_PATTERN_" + strings.ToLower(idcompany) + "_" + strings.ToLower(username)
 	var card_res Card_Strc
 
 	if round_game_all < 1 {
@@ -133,13 +133,15 @@ func Save_transaksi(idcompany, username, status, resultcardwin, codepoin string,
 		card_res.TypePattern = idlistpattern
 		card_res.Pattern = pattern
 		card_res.Total = total_card
-		helpers.SetRedis(field_redis, card_res, 10*time.Minute)
+		helpers.SetRedis(field_redis, card_res, 30*time.Minute)
 	} else {
 		resultredis, flag := helpers.GetRedis(field_redis)
 		jsonredis := []byte(resultredis)
 		pattern_redis, _ := jsonparser.GetString(jsonredis, "pattern")
 		typepattern_redis, _ := jsonparser.GetString(jsonredis, "typepattern")
 		total_redis, _ := jsonparser.GetInt(jsonredis, "total")
+		fmt.Println("Total Card REDIS : " + strconv.Itoa(int(total_redis)))
+		fmt.Println("Total Game : " + strconv.Itoa(round_game_all))
 		if int(total_redis-1) == round_game_all {
 			val_pattern := helpers.DeleteRedis(field_redis)
 			fmt.Printf("Redis Delete Card Pattern : %d\n", val_pattern)
@@ -151,7 +153,7 @@ func Save_transaksi(idcompany, username, status, resultcardwin, codepoin string,
 			card_res.TypePattern = idlistpattern
 			card_res.Pattern = pattern
 			card_res.Total = total_card
-			helpers.SetRedis(field_redis, card_res, 5*time.Minute)
+			helpers.SetRedis(field_redis, card_res, 30*time.Minute)
 		} else {
 			fmt.Println("Cache Card Pattern")
 			pattern = pattern_redis
@@ -160,9 +162,9 @@ func Save_transaksi(idcompany, username, status, resultcardwin, codepoin string,
 		}
 
 	}
-	log.Println("Total Card : " + strconv.Itoa(total_card))
-	log.Println("Total Game : " + strconv.Itoa(round_game_all))
-	log.Println("Type Pattern : " + idlistpattern)
+	fmt.Println("Total Card : " + strconv.Itoa(total_card))
+	fmt.Println("Total Game : " + strconv.Itoa(round_game_all))
+	fmt.Println("Type Pattern : " + idlistpattern)
 	resultcard := strings.Split(pattern, "|")
 
 	flag_insert, msg_insert := Exec_SQL(sql_insert, tbl_trx_transaksi, "INSERT",

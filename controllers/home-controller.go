@@ -13,8 +13,16 @@ import (
 	"github.com/nikitamirzani323/BTANGKAS_CLIENT_API/models"
 )
 
+const listbet_client_redis = "CLIENT_LISTBET"
 const invoice_super_redis = "COMPANYINVOICE_BACKEND"
-const invoice_home_redis = "LISTINVOICE"
+const invoice_client_redis = "CLIENT_LISTINVOICE"
+
+type c_tai struct {
+	Status  int         `json:"status"`
+	Message string      `json:"message"`
+	Record  interface{} `json:"record"`
+	Time    string      `json:"time"`
+}
 
 func CheckToken(c *fiber.Ctx) error {
 	var errors []*helpers.ErrorResponse
@@ -75,18 +83,70 @@ func CheckToken(c *fiber.Ctx) error {
 		// if err != nil {
 		// 	return c.SendStatus(fiber.StatusInternalServerError)
 		// }
-		listbet, _ := models.Fetch_listbetHome("AJUNA")
-		return c.JSON(fiber.Map{
-			"status":          fiber.StatusOK,
-			"client_company":  "ajuna",
-			"client_name":     "developer",
-			"client_username": "developer212",
-			"client_credit":   100000,
-			"client_listbet":  listbet,
+		// var obj_clistbet c_listbet
+		// var arraobj_clistbet []c_listbet
+		var obj_record c_tai
+
+		var obj entities.Model_lisbet
+		var arraobj []entities.Model_lisbet
+		resultredis, flag := helpers.GetRedis(listbet_client_redis + "_" + strings.ToLower("ajuna"))
+		jsonredis := []byte(resultredis)
+		status_RD, _ := jsonparser.GetInt(jsonredis, "status")
+		message_RD, _ := jsonparser.GetString(jsonredis, "message")
+		record_RD, _, _, _ := jsonparser.Get(jsonredis, "record")
+		jsonparser.ArrayEach(record_RD, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			lisbet_id, _ := jsonparser.GetInt(value, "lisbet_id")
+			lisbet_minbet, _ := jsonparser.GetFloat(value, "lisbet_minbet")
+
+			var obj_listpoin entities.Model_lispoin
+			var arraobj_listpoin []entities.Model_lispoin
+			record_lisbet_config_RD, _, _, _ := jsonparser.Get(value, "lisbet_config")
+			jsonparser.ArrayEach(record_lisbet_config_RD, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+				lispoin_id, _ := jsonparser.GetString(value, "lispoin_id")
+				lispoin_nmpoin, _ := jsonparser.GetString(value, "lispoin_nmpoin")
+				lispoin_poin, _ := jsonparser.GetInt(value, "lispoin_poin")
+
+				obj_listpoin.Lispoin_id = lispoin_id
+				obj_listpoin.Lispoin_nmpoin = lispoin_nmpoin
+				obj_listpoin.Lispoin_poin = int(lispoin_poin)
+				arraobj_listpoin = append(arraobj_listpoin, obj_listpoin)
+			})
+
+			obj.Lisbet_id = int(lisbet_id)
+			obj.Lisbet_minbet = float64(lisbet_minbet)
+			obj.Lisbet_conf = arraobj_listpoin
+			arraobj = append(arraobj, obj)
 		})
+		obj_record.Status = int(status_RD)
+		obj_record.Message = message_RD
+		obj_record.Record = arraobj
+		if !flag {
+			fmt.Println("LISTBET MYSQL")
+			listbet, _ := models.Fetch_listbetHome("AJUNA")
+			helpers.SetRedis(listbet_client_redis+"_"+strings.ToLower("ajuna"), listbet, 1440*time.Minute)
+			return c.JSON(fiber.Map{
+				"status":          fiber.StatusOK,
+				"client_company":  "ajuna",
+				"client_name":     "developer",
+				"client_username": "developer212",
+				"client_listbet":  listbet,
+				"client_credit":   100000,
+			})
+		} else {
+			fmt.Println("LISTBET CACHE")
+			return c.JSON(fiber.Map{
+				"status":          fiber.StatusOK,
+				"client_company":  "ajuna",
+				"client_name":     "developer",
+				"client_username": "developer212",
+				"client_listbet":  obj_record,
+				"client_credit":   100000,
+			})
+		}
 
 	}
 }
+
 func ListInvoice(c *fiber.Ctx) error {
 	var errors []*helpers.ErrorResponse
 	client := new(entities.Controller_invoice)
@@ -119,7 +179,7 @@ func ListInvoice(c *fiber.Ctx) error {
 	var obj entities.Model_invoice
 	var arraobj []entities.Model_invoice
 	render_page := time.Now()
-	resultredis, flag := helpers.GetRedis(invoice_home_redis + "_" + strings.ToLower(client.Invoice_company) + "_" + strings.ToLower(client.Invoice_username))
+	resultredis, flag := helpers.GetRedis(invoice_client_redis + "_" + strings.ToLower(client.Invoice_company) + "_" + strings.ToLower(client.Invoice_username))
 	jsonredis := []byte(resultredis)
 	record_RD, _, _, _ := jsonparser.Get(jsonredis, "record")
 	jsonparser.ArrayEach(record_RD, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
@@ -157,7 +217,7 @@ func ListInvoice(c *fiber.Ctx) error {
 				"record":  nil,
 			})
 		}
-		helpers.SetRedis(invoice_home_redis+"_"+strings.ToLower(client.Invoice_company)+"_"+strings.ToLower(client.Invoice_username), result, 60*time.Minute)
+		helpers.SetRedis(invoice_client_redis+"_"+strings.ToLower(client.Invoice_company)+"_"+strings.ToLower(client.Invoice_username), result, 60*time.Minute)
 		fmt.Printf("INVOICE MYSQL %s-%s\n", client.Invoice_company, client.Invoice_username)
 		return c.JSON(result)
 	} else {
@@ -274,7 +334,7 @@ func TransaksidetailSave(c *fiber.Ctx) error {
 	return c.JSON(result)
 }
 func _deleteredis_game(company, username string) {
-	val_invoice := helpers.DeleteRedis(invoice_home_redis + "_" + strings.ToLower(company) + "_" + strings.ToLower(username))
+	val_invoice := helpers.DeleteRedis(invoice_client_redis + "_" + strings.ToLower(company) + "_" + strings.ToLower(username))
 	fmt.Printf("Redis Delete INVOICE : %d - %s %s\n", val_invoice, company, username)
 
 	val_invoice_super := helpers.DeleteRedis(invoice_super_redis + "_" + strings.ToLower(company))

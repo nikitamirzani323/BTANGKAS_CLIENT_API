@@ -19,15 +19,12 @@ func Fetch_listbetHome(idcompany string) (helpers.Response, error) {
 	con := db.CreateCon()
 	ctx := context.Background()
 	start := time.Now()
-
 	tbl_mst_listbet, tbl_mst_config, _, _ := Get_mappingdatabase(idcompany)
-
 	sql_select := `SELECT 
 			idbet_listbet , minbet_listbet
 			FROM ` + tbl_mst_listbet + `  
 			WHERE idcompany=$1 
 			ORDER BY minbet_listbet ASC   `
-
 	row, err := con.QueryContext(ctx, sql_select, idcompany)
 	helpers.ErrorCheck(err)
 	for row.Next() {
