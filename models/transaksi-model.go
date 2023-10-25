@@ -146,6 +146,11 @@ func Save_transaksi(idcompany, username, status, resultcardwin, codepoin string,
 			val_pattern := helpers.DeleteRedis(field_redis)
 			fmt.Printf("Redis Delete Card Pattern : %d\n", val_pattern)
 			flag = false
+		}
+		if int(total_redis-1) < round_game_all {
+			val_pattern := helpers.DeleteRedis(field_redis)
+			fmt.Printf("Redis Delete Card Pattern : %d\n", val_pattern)
+			flag = false
 			round_game_all = 0
 		}
 		if !flag {
