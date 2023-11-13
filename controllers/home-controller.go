@@ -15,6 +15,7 @@ import (
 
 const listbet_client_redis = "CLIENT_LISTBET"
 const invoice_super_redis = "COMPANYINVOICE_BACKEND"
+const invoice_agen_redis = "AGEN_TRANSAKSI"
 const invoice_client_redis = "CLIENT_LISTINVOICE"
 
 type c_tai struct {
@@ -339,4 +340,7 @@ func _deleteredis_game(company, username string) {
 
 	val_invoice_super := helpers.DeleteRedis(invoice_super_redis + "_" + strings.ToLower(company))
 	fmt.Printf("Redis Delete INVOICE SUPER : %d - %s %s\n", val_invoice_super, company, username)
+
+	val_invoice_agen := helpers.DeleteRedis(invoice_agen_redis + "_" + strings.ToLower(company))
+	fmt.Printf("Redis Delete INVOICE AGEN : %d - %s \n", val_invoice_agen, company)
 }
