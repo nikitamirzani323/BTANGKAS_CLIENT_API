@@ -187,7 +187,7 @@ func Save_transaksi(idcompany, username, status, resultcardwin, codepoin string,
 
 	field_column := tbl_trx_transaksi + tglnow.Format("YYYY") + tglnow.Format("MM")
 	idrecord_counter := Get_counter(field_column)
-	idrecrodparent_value := tglnow.Format("YY") + tglnow.Format("MM") + tglnow.Format("DD") + tglnow.Format("HH") + strconv.Itoa(idrecord_counter)
+	idrecrodparent_value := "INV-" + strings.ToUpper(idcompany) + "-" + tglnow.Format("YY") + tglnow.Format("MM") + tglnow.Format("DD") + tglnow.Format("HH") + strconv.Itoa(idrecord_counter)
 	date_transaksi := tglnow.Format("YYYY-MM-DD HH:mm:ss")
 
 	idlistpattern := ""
