@@ -12,10 +12,22 @@ type Model_invoice struct {
 	Invoice_card_result string `json:"invoice_card_result"`
 	Invoice_card_win    string `json:"invoice_card_win"`
 }
+type Model_invoicedetail struct {
+	Invoicedetail_id     string `json:"invoicedetail_id"`
+	Invoicedetail_date   string `json:"invoicedetail_date"`
+	Invoicedetail_round  int    `json:"invoicedetail_round"`
+	Invoicedetail_bet    int    `json:"invoicedetail_bet"`
+	Invoicedetail_win    int    `json:"invoicedetail_win"`
+	Invoicedetail_status string `json:"invoicedetail_status"`
+}
 
 type Controller_invoice struct {
 	Invoice_company  string `json:"invoice_company" validate:"required"`
 	Invoice_username string `json:"invoice_username" validate:"required"`
+}
+type Controller_invoicedetail struct {
+	Invoice_id      string `json:"invoice_id" validate:"required"`
+	Invoice_company string `json:"invoice_company" validate:"required"`
 }
 type Controller_transaksisave struct {
 	Transaksi_company       string `json:"transaksi_company" validate:"required"`

@@ -218,11 +218,86 @@ func ListInvoice(c *fiber.Ctx) error {
 				"record":  nil,
 			})
 		}
-		helpers.SetRedis(invoice_client_redis+"_"+strings.ToLower(client.Invoice_company)+"_"+strings.ToLower(client.Invoice_username), result, 60*time.Minute)
+		helpers.SetRedis(invoice_client_redis+"_"+strings.ToLower(client.Invoice_company)+"_"+strings.ToLower(client.Invoice_username), result, 5*time.Minute)
 		fmt.Printf("INVOICE MYSQL %s-%s\n", client.Invoice_company, client.Invoice_username)
 		return c.JSON(result)
 	} else {
 		fmt.Printf("INVOICE CACHE %s-%s\n", client.Invoice_company, client.Invoice_username)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusOK,
+			"message": "Success",
+			"record":  arraobj,
+			"time":    time.Since(render_page).String(),
+		})
+	}
+}
+func ListInvoiceDetail(c *fiber.Ctx) error {
+	var errors []*helpers.ErrorResponse
+	client := new(entities.Controller_invoicedetail)
+	validate := validator.New()
+	if err := c.BodyParser(client); err != nil {
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusBadRequest,
+			"message": err.Error(),
+			"record":  nil,
+		})
+	}
+
+	err := validate.Struct(client)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			var element helpers.ErrorResponse
+			element.Field = err.StructField()
+			element.Tag = err.Tag()
+			errors = append(errors, &element)
+		}
+		c.Status(fiber.StatusBadRequest)
+		return c.JSON(fiber.Map{
+			"status":  fiber.StatusBadRequest,
+			"message": "validation",
+			"record":  errors,
+		})
+	}
+
+	var obj entities.Model_invoicedetail
+	var arraobj []entities.Model_invoicedetail
+	render_page := time.Now()
+	resultredis, flag := helpers.GetRedis(invoice_client_redis + "_" + strings.ToLower(client.Invoice_company) + "_" + strings.ToLower(client.Invoice_id))
+	jsonredis := []byte(resultredis)
+	record_RD, _, _, _ := jsonparser.Get(jsonredis, "record")
+	jsonparser.ArrayEach(record_RD, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		invoicedetail_id, _ := jsonparser.GetString(value, "invoicedetail_id")
+		invoicedetail_date, _ := jsonparser.GetString(value, "invoicedetail_date")
+		invoicedetail_round, _ := jsonparser.GetInt(value, "invoicedetail_round")
+		invoicedetail_bet, _ := jsonparser.GetInt(value, "invoicedetail_bet")
+		invoicedetail_win, _ := jsonparser.GetInt(value, "invoicedetail_win")
+		invoicedetail_status, _ := jsonparser.GetString(value, "invoicedetail_status")
+
+		obj.Invoicedetail_id = invoicedetail_id
+		obj.Invoicedetail_date = invoicedetail_date
+		obj.Invoicedetail_round = int(invoicedetail_round)
+		obj.Invoicedetail_bet = int(invoicedetail_bet)
+		obj.Invoicedetail_win = int(invoicedetail_win)
+		obj.Invoicedetail_status = invoicedetail_status
+		arraobj = append(arraobj, obj)
+	})
+
+	if !flag {
+		result, err := models.Fetch_invoicedetail(client.Invoice_id, client.Invoice_company)
+		if err != nil {
+			c.Status(fiber.StatusBadRequest)
+			return c.JSON(fiber.Map{
+				"status":  fiber.StatusBadRequest,
+				"message": err.Error(),
+				"record":  nil,
+			})
+		}
+		helpers.SetRedis(invoice_client_redis+"_"+strings.ToLower(client.Invoice_company)+"_"+strings.ToLower(client.Invoice_id), result, 3*time.Minute)
+		fmt.Printf("INVOICE DETAIL MYSQL %s-%s\n", client.Invoice_company, client.Invoice_id)
+		return c.JSON(result)
+	} else {
+		fmt.Printf("INVOICE DETAIL CACHE %s-%s\n", client.Invoice_company, client.Invoice_id)
 		return c.JSON(fiber.Map{
 			"status":  fiber.StatusOK,
 			"message": "Success",

@@ -46,6 +46,7 @@ func Init() *fiber.App {
 
 	app.Post("/api/checktoken", controllers.CheckToken)
 	app.Post("/api/listinvoice", controllers.ListInvoice)
+	app.Post("/api/listinvoicedetail", controllers.ListInvoiceDetail)
 	app.Post("/api/savetransaksi", controllers.TransaksiSave)
 	app.Post("/api/savetransaksidetail", controllers.TransaksidetailSave)
 

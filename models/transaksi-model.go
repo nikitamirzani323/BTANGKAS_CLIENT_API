@@ -163,6 +163,56 @@ func Fetch_invoice(idcompany, username string) (helpers.Response, error) {
 
 	return res, nil
 }
+func Fetch_invoicedetail(idinvoice, idcompany string) (helpers.Response, error) {
+	var obj entities.Model_invoicedetail
+	var arraobj []entities.Model_invoicedetail
+	var res helpers.Response
+	msg := "Data Not Found"
+	con := db.CreateCon()
+	ctx := context.Background()
+	start := time.Now()
+
+	_, _, _, tbl_trx_transaksidetail := Get_mappingdatabase(idcompany)
+
+	sql_select := ""
+	sql_select += "SELECT "
+	sql_select += "idtransaksidetail , to_char(COALESCE(createdate_transaksidetail,now()), 'YYYY-MM-DD HH24:MI:SS') as datetransaksi,  "
+	sql_select += "roundbet_detail, bet, win, status_transaksidetail   "
+	sql_select += "FROM " + tbl_trx_transaksidetail + " "
+	sql_select += "WHERE idtransaksi='" + idinvoice + "' "
+	sql_select += "ORDER BY createdate_transaksidetail ASC "
+
+	row, err := con.QueryContext(ctx, sql_select)
+	helpers.ErrorCheck(err)
+	for row.Next() {
+		var (
+			idtransaksidetail_db, datetransaksi_db, status_transaksidetail_db string
+			roundbet_detail_db, bet_db, win_db                                int
+		)
+
+		err = row.Scan(&idtransaksidetail_db, &datetransaksi_db,
+			&roundbet_detail_db, &bet_db, &win_db, &status_transaksidetail_db)
+
+		helpers.ErrorCheck(err)
+
+		obj.Invoicedetail_id = idtransaksidetail_db
+		obj.Invoicedetail_date = datetransaksi_db
+		obj.Invoicedetail_round = roundbet_detail_db
+		obj.Invoicedetail_bet = bet_db
+		obj.Invoicedetail_win = win_db
+		obj.Invoicedetail_status = status_transaksidetail_db
+		arraobj = append(arraobj, obj)
+		msg = "Success"
+	}
+	defer row.Close()
+
+	res.Status = fiber.StatusOK
+	res.Message = msg
+	res.Record = arraobj
+	res.Time = time.Since(start).String()
+
+	return res, nil
+}
 func Save_transaksi(idcompany, username, status, resultcardwin, codepoin string, round_game_all, round_bet, bet, c_before, c_after, win int) (helpers.Responsetransaksi, error) {
 	var res helpers.Responsetransaksi
 	msg := "Failed"
