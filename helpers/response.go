@@ -14,6 +14,11 @@ type Responsepaging struct {
 	Totalrecord int         `json:"totalrecord"`
 	Time        string      `json:"time"`
 }
+type ResponseCard struct {
+	Status int    `json:"status"`
+	Result string `json:"result"`
+	Time   string `json:"time"`
+}
 type Responsetransaksi struct {
 	Status      int         `json:"status"`
 	Message     string      `json:"message"`

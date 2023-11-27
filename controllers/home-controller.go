@@ -409,6 +409,13 @@ func TransaksidetailSave(c *fiber.Ctx) error {
 	}
 	return c.JSON(result)
 }
+func CheckCard(c *fiber.Ctx) error {
+	result, _ := models.Check_status_card()
+	return c.JSON(fiber.Map{
+		"status": fiber.StatusOK,
+		"record": result,
+	})
+}
 func _deleteredis_game(company, username string) {
 	val_invoice := helpers.DeleteRedis(invoice_client_redis + "_" + strings.ToLower(company) + "_" + strings.ToLower(username))
 	fmt.Printf("Redis Delete INVOICE : %d - %s %s\n", val_invoice, company, username)

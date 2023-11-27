@@ -18,6 +18,13 @@ import (
 	"github.com/nleeper/goment"
 )
 
+type card_result_data struct {
+	card_id          string
+	card_val         string
+	card_val_display int
+	card_code_card   string
+	card_img         string
+}
 type Card_Strc struct {
 	TypePattern string `json:"typepattern"`
 	Pattern     string `json:"pattern"`
@@ -25,6 +32,62 @@ type Card_Strc struct {
 }
 
 const database_listpoint_local = configs.DB_tbl_mst_listpoint
+
+var cards = []card_result_data{
+	{card_id: "2_diamond", card_val: "2", card_val_display: 2, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_2.png"},
+	{card_id: "3_diamond", card_val: "3", card_val_display: 3, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_3.png"},
+	{card_id: "4_diamond", card_val: "4", card_val_display: 4, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_4.png"},
+	{card_id: "5_diamond", card_val: "5", card_val_display: 5, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_5.png"},
+	{card_id: "6_diamond", card_val: "6", card_val_display: 6, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_6.png"},
+	{card_id: "7_diamond", card_val: "7", card_val_display: 7, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_7.png"},
+	{card_id: "8_diamond", card_val: "8", card_val_display: 8, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_8.png"},
+	{card_id: "9_diamond", card_val: "9", card_val_display: 9, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_9.png"},
+	{card_id: "10_diamond", card_val: "10", card_val_display: 10, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_10.png"},
+	{card_id: "j_diamond", card_val: "J", card_val_display: 11, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_J.png"},
+	{card_id: "q_diamond", card_val: "Q", card_val_display: 12, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_Q.png"},
+	{card_id: "k_diamond", card_val: "K", card_val_display: 13, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_K.png"},
+	{card_id: "as_diamond", card_val: "AS", card_val_display: 14, card_code_card: "D", card_img: "./CARD/WHITE/CARD_RED_DIAMOND_AS.png"},
+	{card_id: "2_heart", card_val: "2", card_val_display: 2, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_2.png"},
+	{card_id: "3_heart", card_val: "3", card_val_display: 3, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_3.png"},
+	{card_id: "4_heart", card_val: "4", card_val_display: 4, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_4.png"},
+	{card_id: "5_heart", card_val: "5", card_val_display: 5, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_5.png"},
+	{card_id: "6_heart", card_val: "6", card_val_display: 6, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_6.png"},
+	{card_id: "7_heart", card_val: "7", card_val_display: 7, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_7.png"},
+	{card_id: "8_heart", card_val: "8", card_val_display: 8, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_8.png"},
+	{card_id: "9_heart", card_val: "9", card_val_display: 9, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_9.png"},
+	{card_id: "10_heart", card_val: "10", card_val_display: 10, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_10.png"},
+	{card_id: "j_heart", card_val: "J", card_val_display: 11, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_J.png"},
+	{card_id: "q_heart", card_val: "Q", card_val_display: 12, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_Q.png"},
+	{card_id: "k_heart", card_val: "K", card_val_display: 13, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_K.png"},
+	{card_id: "as_heart", card_val: "AS", card_val_display: 14, card_code_card: "H", card_img: "./CARD/WHITE/CARD_RED_HEART_AS.png"},
+	{card_id: "2_club", card_val: "2", card_val_display: 2, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_2.png"},
+	{card_id: "3_club", card_val: "3", card_val_display: 3, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_3.png"},
+	{card_id: "4_club", card_val: "4", card_val_display: 4, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_4.png"},
+	{card_id: "5_club", card_val: "5", card_val_display: 5, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_5.png"},
+	{card_id: "6_club", card_val: "6", card_val_display: 6, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_6.png"},
+	{card_id: "7_club", card_val: "7", card_val_display: 7, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_7.png"},
+	{card_id: "8_club", card_val: "8", card_val_display: 8, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_8.png"},
+	{card_id: "9_club", card_val: "9", card_val_display: 9, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_9.png"},
+	{card_id: "10_club", card_val: "10", card_val_display: 10, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_10.png"},
+	{card_id: "j_club", card_val: "J", card_val_display: 11, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_J.png"},
+	{card_id: "q_club", card_val: "Q", card_val_display: 12, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_Q.png"},
+	{card_id: "k_club", card_val: "K", card_val_display: 13, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_K.png"},
+	{card_id: "as_club", card_val: "AS", card_val_display: 14, card_code_card: "C", card_img: "./CARD/WHITE/CARD_BLACK_KRITING_AS.png"},
+	{card_id: "2_spade", card_val: "2", card_val_display: 2, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_2.png"},
+	{card_id: "3_spade", card_val: "3", card_val_display: 3, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_3.png"},
+	{card_id: "4_spade", card_val: "4", card_val_display: 4, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_4.png"},
+	{card_id: "5_spade", card_val: "5", card_val_display: 5, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_5.png"},
+	{card_id: "6_spade", card_val: "6", card_val_display: 6, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_6.png"},
+	{card_id: "7_spade", card_val: "7", card_val_display: 7, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_7.png"},
+	{card_id: "8_spade", card_val: "8", card_val_display: 8, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_8.png"},
+	{card_id: "9_spade", card_val: "9", card_val_display: 9, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_9.png"},
+	{card_id: "10_spade", card_val: "10", card_val_display: 10, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_10.png"},
+	{card_id: "j_spade", card_val: "J", card_val_display: 11, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_J.png"},
+	{card_id: "q_spade", card_val: "Q", card_val_display: 12, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_Q.png"},
+	{card_id: "k_spade", card_val: "K", card_val_display: 13, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_K.png"},
+	{card_id: "as_spade", card_val: "AS", card_val_display: 14, card_code_card: "S", card_img: "./CARD/WHITE/CARD_BLACK_DAUN_AS.png"},
+	{card_id: "jk_black", card_val: "JK", card_val_display: 1, card_code_card: "JK", card_img: "./CARD/WHITE/CARD_JOKER_BLACK.png"},
+	{card_id: "jk_red", card_val: "JK", card_val_display: 1, card_code_card: "JK", card_img: "./CARD/WHITE/CARD_JOKER_RED.png"}}
 
 func Fetch_listbetHome(idcompany string) (helpers.Response, error) {
 	var obj entities.Model_lisbet
@@ -426,6 +489,17 @@ func Save_transaksidetail(idcompany, idtransaksi, resulcard_win, status, codepoi
 
 	return res, nil
 }
+func Check_status_card() (helpers.ResponseCard, error) {
+	var res helpers.ResponseCard
+	start := time.Now()
+	data := cards[0].card_id
+
+	fmt.Println(data)
+	res.Status = fiber.StatusOK
+	res.Result = data
+	res.Time = time.Since(start).String()
+	return res, nil
+}
 
 func _GenerateCardRandomDB() (string, int, string) {
 	con := db.CreateCon()
@@ -494,7 +568,6 @@ func _GenerateCardRandomDB() (string, int, string) {
 
 	return listpattern, total_detail, idlistpattern
 }
-
 func _GetPattern(status string, idpoin int) string {
 	con := db.CreateCon()
 	ctx := context.Background()
