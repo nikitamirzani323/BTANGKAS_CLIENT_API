@@ -418,10 +418,16 @@ func Save_transaksi(idcompany, username, status, resultcardwin, codepoin string,
 		fmt.Println(msg_insert)
 	}
 
+	dataeng, no := helpers.Encryption(resultcard[round_game_all])
+	datadek := helpers.Decryption(dataeng + "|" + strconv.Itoa(no))
+	log.Println("Data asli : ", resultcard[round_game_all])
+	log.Println("Data enkrisi : ", dataeng+"|"+strconv.Itoa(no))
+	log.Println("Data dekripsi : ", datadek)
+
 	res.Status = fiber.StatusOK
 	res.Message = msg
 	res.Idtransaksi = idrecrodparent_value
-	res.Card_game = resultcard[round_game_all]
+	res.Card_game = dataeng + "|" + strconv.Itoa(no)
 	res.Card_length = total_card
 	res.Time = time.Since(render_page).String()
 

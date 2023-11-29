@@ -35,7 +35,7 @@ func HashPasswordMD5(password string) string {
 }
 func Encryption(datatext string) (string, int) {
 	min := 0
-	max := 149
+	max := 20 //149
 	rand.Seed(time.Now().UnixNano())
 	// keymap := rand.Intn(max-min) + min
 	keymap := rand.Intn(max-min) + min
